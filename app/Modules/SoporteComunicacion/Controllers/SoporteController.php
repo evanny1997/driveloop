@@ -2,37 +2,22 @@
 
 namespace App\Modules\SoporteComunicacion\Controllers;
 
-use App\Modules\SoporteComunicacion\Models\Soporte;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use App\Models\MER\Ticket;
 use Illuminate\Support\Str;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Exception;
-
+use Illuminate\Support\Facades\Storage;
+use App\Models\MER\Ticket;
 
 class SoporteController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         return view("modules.SoporteComunicacion.index");
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request): RedirectResponse
     {
         $data = $request->validate([
@@ -61,17 +46,6 @@ class SoporteController extends Controller
         return redirect()->route('dashboard')->with(['message' => "El ticket se ha creado correctamente con el código $cod"]);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Soporte $soporte)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit($cod): JsonResponse
     {
         $ticket = Ticket::find($cod);
@@ -89,19 +63,20 @@ class SoporteController extends Controller
         ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Soporte $soporte)
+    public function GetPDF(string $cod, bool $pdfres)
     {
-        //
-    }
+        $ticket = Ticket::findOrFail($cod);
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Soporte $soporte)
-    {
-        //
+        if (auth()->user()->hasRole('Usuario')) {
+            if (auth()->id() !== $ticket->idusu)
+                return abort(403, 'Permiso denegado.');
+        }
+
+        $url = $pdfres ? $ticket->urlpdfres : $ticket->urlpdf;
+
+        if ($url === null || !Storage::disk('local')->exists($url))
+            return abort(404);
+
+        return response()->file(Storage::disk('local')->path($url));
     }
 }
