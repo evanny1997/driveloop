@@ -1,4 +1,4 @@
-git<?php
+<?php
 
     namespace App\Modules\PagoDigital\Controllers;
 

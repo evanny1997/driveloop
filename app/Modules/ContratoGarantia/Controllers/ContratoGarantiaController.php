@@ -50,4 +50,36 @@ class ContratoGarantiaController extends Controller
 
         return $pdf->stream("contrato_{$reserva->cod}.pdf");
     }
+
+    public function enviarContrato($codReserva)
+    {
+        $reserva = Reserva::with(['user', 'vehiculo.marca', 'vehiculo.linea'])->findOrFail($codReserva);
+
+        // Generar código único de verificación
+        $codigo = strtoupper(bin2hex(random_bytes(4)));
+
+        // Generar PDF
+        $pdf = Pdf::loadView('pdf.contrato', compact('reserva', 'codigo'));
+
+        // Registrar en base de datos
+        Contrato::create([
+            'reserva_id' => $reserva->cod,
+            'codigo_verificacion' => $codigo,
+            'ruta_pdf' => "contratos/contrato_{$reserva->cod}.pdf"
+        ]);
+
+        // Guardar el archivo físicamente
+        $pdfOutput = $pdf->output();
+        Storage::put("public/contratos/contrato_{$reserva->cod}.pdf", $pdfOutput);
+
+        // Enviar el correo al cliente
+        if ($reserva->user && $reserva->user->email) {
+            Mail::to($reserva->user->email)->send(new ContratoAlquilerMail($reserva, $pdfOutput));
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Contrato generado y enviado exitosamente.'
+        ]);
+    }
 }

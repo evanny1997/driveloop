@@ -16,6 +16,7 @@
                                 <th>Vehículo</th>
                                 <th>Fechas</th>
                                 <th>Estado Contrato</th>
+                                <th>Referencia</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
@@ -42,19 +43,35 @@
                                 </td>
                                 <td>
                                     @if ($reserva->contrato)
-                                    <a href="{{ route('contrato.generar', $reserva->cod) }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                    {{ $reserva->contrato->codigo_verificacion }}
+                                    @else
+                                    -
+                                    @endif
+                                </td>
+                                <td>
+                                    @if ($reserva->contrato)
+                                    <a href="{{ route('contrato.descargar', $reserva->cod) }}" target="_blank" class="btn btn-sm btn-outline-primary">
                                         Ver PDF
                                     </a>
+                                    <form action="{{ route('contrato.enviar', $reserva->cod) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        <button type="submit" class="btn btn-sm btn-outline-secondary">
+                                            Enviar por Email
+                                        </button>
+                                    </form>
                                     @else
-                                    <a href="{{ route('contrato.generar', $reserva->cod) }}" class="btn btn-sm btn-primary">
-                                        Generar y Enviar
-                                    </a>
+                                    <form action="{{ route('contrato.enviar', $reserva->cod) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        <button type="submit" class="btn btn-sm btn-primary">
+                                            Generar y Enviar
+                                        </button>
+                                    </form>
                                     @endif
                                 </td>
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="6" class="text-center text-muted py-4">No hay reservas registradas.</td>
+                                <td colspan="7" class="text-center text-muted py-4">No hay reservas registradas.</td>
                             </tr>
                             @endforelse
                         </tbody>
