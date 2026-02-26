@@ -4,9 +4,12 @@ use Illuminate\Support\Facades\Route;
 
 
 
+use App\Http\Controllers\ContratoController;
+
 Route::get('/', fn() => view('home'));
 
 Route::get('/contrato/descargar/{id}', [ContratoController::class, 'generar'])->name('contrato.descargar');
+Route::post('/contrato/confirmar/{id}', [ContratoController::class, 'confirmar'])->name('contrato.confirmar');
 
 require __DIR__ . '/breeze/routes.php';
 require __DIR__ . '/breeze/auth.php';
