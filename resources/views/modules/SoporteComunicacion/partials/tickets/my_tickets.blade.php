@@ -8,7 +8,7 @@
 
         $tickets = $grpTickets[$i];
     @endphp
-    <x-toggle :title="$title">
+    <x-toggle title="{{ $title . ' (' . $tickets->count() . ')' }}">
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y text-gray-500">
                 <thead class="bg-gray-200 text-xs font-medium uppercase tracking-wider">
@@ -23,6 +23,7 @@
                                     break;
                                 case 2:
                                     echo '<th class="py-2">Fecha de cierre</th>';
+                                    echo '<th class="py-2">Satisfacción</th>';
                                     break;
                             }                            
                         @endphp
@@ -32,14 +33,15 @@
                     @if ($tickets->isNotEmpty())
                         @foreach ($tickets as $ticket)
                             <tr>
-                                <td class="px-4 py-2 whitespace-nowrap flex justify-center">
+                                <td class="px-4 py-2 flex justify-center">
                                     @php
                                         $ticket_dto = [
                                             'cod' => $ticket->cod,
                                             'asu' => $ticket->asu,
                                             'des' => $ticket->des,
                                             'feccre' => $ticket->feccre,
-                                            'nomsop' => $ticket->user_soporte ? "{$ticket->user_soporte->nom} {$ticket->user_soporte->ape}" : 'Pendiente'
+                                            'nomsop' => $ticket->user_soporte ? ($ticket->idususop === $ticket->idusu ? 'Cerrado por usuario' : "{$ticket->user_soporte->nom} {$ticket->user_soporte->ape}") : '',
+                                            'estado' => $i
                                         ];
 
                                         if ($ticket->urlpdf !== null) {
@@ -53,15 +55,10 @@
                                         }
 
                                         switch ($i) {
-                                            case 0:
-                                                $ticket_dto['estado'] = $i;
-                                                break;
                                             case 1:
-                                                $ticket_dto['estado'] = $i;
                                                 $ticket_dto['fecpro'] = $ticket->fecpro;
                                                 break;
                                             case 2:
-                                                $ticket_dto['estado'] = $i;
                                                 $ticket_dto['fecpro'] = $ticket->fecpro;
                                                 $ticket_dto['feccie'] = $ticket->feccie;
                                                 break;
@@ -75,23 +72,36 @@
                                         </span>
                                     </button>
                                 </td>
-                                <td class="px-4 py-2 whitespace-nowrap text-sm text-left">{{ $ticket->asu }}</td>
-                                <td class="px-4 py-2 whitespace-nowrap text-sm">{{ $ticket->feccre }}</td>
-                                @php
-                                    switch ($i) {
-                                        case 1:
-                                            echo "<td class='px-4 py-2 whitespace-nowrap text-sm'>$ticket->fecpro</td>";
-                                            break;
-                                        case 2:
-                                            echo "<td class='px-4 py-2 whitespace-nowrap text-sm'> $ticket->feccie </td>";
-                                            break;
-                                    }
-                                @endphp
+                                <td class="px-4 py-2 text-sm text-left">{{ $ticket->asu }}</td>
+                                <td class="px-4 py-2 text-sm">{{ $ticket->feccre }}</td>
+                                @switch($i) 
+                                    @case(1)
+                                        <td class='px-4 py-2 text-sm'>{{ $ticket->fecpro }}</td>
+                                        @break
+                                    @case(2)
+                                        <td class='px-4 py-2 text-sm'>{{ $ticket->feccie }}</td>
+                                        <td class='py-2'>
+                                            @if ($ticket->score->count() == 0)
+                                                @if ($ticket->idusu === $ticket->idususop)
+                                                    <p class="text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">Cerrado Usuario</p>
+                                                @else
+                                                    <button class="w-full text-xs leading-5 font-semibold rounded-full bg-yellow-100 hover:bg-yellow-200 text-yellow-800"
+                                                        x-on:click.prevent="$dispatch('open-modal', {name: 'mdl-score-ticket', codtic: '{{ $ticket->cod }}'})">
+                                                        <span>Calificar</span>
+                                                    </button>
+                                                @endif
+                                            @else
+                                                <p class="text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">OK</p>
+                                            @endif
+                                        </td>
+                                    @break
+                                @endswitch
                             </tr>
                         @endforeach
+                        @include('modules.SoporteComunicacion.soporte.partials.modal.score-ticket')
                     @else
                         <tr>
-                            <td colspan="3" class="px-4 py-2 whitespace-nowrap text-sm text-center">
+                            <td colspan="5" class="px-4 py-2 text-sm text-center">
                                 No existen tickets {{ Str::lower($title) }}.
                             </td>
                         </tr>

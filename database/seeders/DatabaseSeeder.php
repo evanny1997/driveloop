@@ -33,6 +33,7 @@ class DatabaseSeeder extends Seeder
         $this->call(TiposDocUsuarioTableSeeder::class);
         $this->call(ModelHasRoleTableSeeder::class);
         $this->call(RolesAndPermissionsSeeder::class);
+        $this->call(QuestionsTableSeeder::class);
 
         $this->call(DatosPruebaSeeder::class); //Provisional
     }
