@@ -23,6 +23,7 @@
              <x-settings-tab name="trips" label="Mis viajes">
                 @include('modules.GestionUsuario.breeze.partials.trips.section')
             </x-settings-tab>
+            
 
             <!-- Tickets -->
              <x-settings-tab name="tickets" label="Tickets">
