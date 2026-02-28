@@ -46,7 +46,9 @@
         <div class="grid grid-col-1 p-2 gap-8 md:grid-cols-2 md:p-4">
             <div>
                 <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Personal</h4>
-                <p class="mt-1 text-sm">{{ $ticket->user_soporte->nom . ' ' . $ticket->user_soporte->ape }}</p>
+                <p class="mt-1 text-sm">
+                    {{ $ticket->user_soporte ? ($ticket->idusu === $ticket->idususop ? 'Cerrado por usuario' : $ticket->user_soporte->nom . ' ' . $ticket->user_soporte->ape) : '' }}
+                </p>
             </div>
             <div>
                 <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Adjunto</h4>
@@ -75,9 +77,9 @@
                 <p class="mt-2 text-sm bg-gray-50 p-2 xl:rounded-md whitespace-pre-line">{{ $ticket->res }}</p>
             </div>
         </div>
-        <div class="mt-6 flex justify-end">
+        <div class="mt-6 flex justify-end text-xs">
             <a href="{{ route('tickets.export.pdf', '') }}/{{ $ticket->cod }}"
-                class="bg-dl hover:bg-dl-two border border-transparent text-white text-xs inline-flex xl:rounded-md justify-center px-5 py-3 tracking-widest font-semibold uppercase transition ease-in-out duration-150 items-center"
+                class="bg-dl hover:bg-dl-two border border-transparent text-white inline-flex xl:rounded-md justify-center px-8 py-3 tracking-widest font-semibold uppercase transition ease-in-out duration-150 items-center"
                 target="_blank">
                 Descargar PDF
             </a>
