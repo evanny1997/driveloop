@@ -30,6 +30,12 @@
                 @include('modules.SoporteComunicacion.partials.tickets.section')
             </x-settings-tab>
 
+
+            
+            <!-- Mis contratos -->
+             <x-settings-tab name="contracts" label="Mis contratos">
+                @include('modules.GestionUsuario.breeze.partials.contracts.section')
+            </x-settings-tab>
             
 
         </x-settings-layout>

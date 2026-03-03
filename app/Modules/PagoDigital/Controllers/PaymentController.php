@@ -15,33 +15,33 @@ class PaymentController extends Controller
     {
         // Configuramos el token desde el ENV
         MercadoPagoConfig::setAccessToken(env('MERCADO_PAGO_ACCESS_TOKEN'));
-
+        
         $client = new PreferenceClient();
 
         try {
             $preference = $client->create([
                 "items" => [
                     [
-                        "title"       => "Reserva de Vehículo",
+                        "title"       => "Mi producto",
                         "quantity"    => 1,
-                        "unit_price"  => (float) $monto,
+                        "unit_price"  => (float) $monto, //2500.00, 
                         "currency_id" => "COP",
-                        "category_id" => "others",
+                        "category_id" => "others", 
                     ]
                 ],
                 "back_urls" => [
                     "success" => route('pago.exitoso'),
                     "failure" => route('pago.fallido'),
-                    "pending" => route('pago.pendiente'),
+                    "pending" => route('pago.pendiente'),                    
                 ],
-                "auto_return" => "approved",
+                "auto_return" => null, 
                 "binary_mode" => true,
-                "external_reference" => (string) $reserva_id,
             ]);
 
-            return view('modules.PagoDigital.checkout', ['preference' => $preference, 'monto' => $monto, 'reserva_id' => $reserva_id]);
+            return view('modules.PagoDigital.checkout', ['preference' => $preference, 'monto' => $monto]);
+
         } catch (MPApiException $e) {
-            dd($e->getApiResponse()->getContent());
+            dd($e->getApiResponse()->getContent()); 
         } catch (\Exception $e) {
             dd($e->getMessage());
         }
@@ -50,8 +50,7 @@ class PaymentController extends Controller
     public function success(Request $request)
     {
         $payment_id = $request->get('payment_id');
-        $reserva_id = $request->get('external_reference');
-        return view('modules.PagoDigital.success', compact('payment_id', 'reserva_id'));
+        return view('modules.PagoDigital.success', compact('payment_id'));
     }
 
     public function failure(Request $request)

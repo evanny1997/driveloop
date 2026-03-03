@@ -1,15 +1,32 @@
 <?php
 
 namespace App\Http\Controllers;
+namespace App\Http\Controllers\GestionUsuario;
 
 use App\Models\MER\Reserva;
 use App\Models\MER\Contrato;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Str;
-use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;        
 
 class ContratoController extends Controller
 {
+public function index(Request $request)
+    {
+        // 1. Obtenemos el usuario logueado
+        $user = $request->user();
+
+        // 2. Obtenemos sus contratos (esto requiere que tengas la relación en el Modelo User)
+        $contracts = $user->contracts()->orderBy('created_at', 'desc')->get();
+
+        // 3. Retornamos la vista principal del panel pasando los contratos
+        // Cambia 'tu.vista.panel' por la ruta real de tu archivo blade
+        return view('modules.GestionUsuario.breeze.index', [
+            'user' => $user,
+            'contracts' => $contracts,
+        ]);
+    }
     public function generar($reservaId)
     {
         // 1. Traer los datos de la reserva
