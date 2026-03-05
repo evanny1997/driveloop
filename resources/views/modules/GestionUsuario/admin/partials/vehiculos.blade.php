@@ -1,12 +1,15 @@
 @php
-    //Traer todos los usuarios con roles ordenados por orden de creacion descendente
     use App\Models\MER\Vehiculo;
     use App\Models\MER\Marca;
     use App\Models\MER\Linea;
     use App\Models\MER\User;
     use App\Models\MER\Clase;
-    $vehiculos = Vehiculo::orderBy('codmar', 'asc')->get();
+    //Traer todos los usuarios con roles ordenados por orden de creacion descendente
+    $vehiculos = Vehiculo::query()
+        ->with(['marca', 'linea', 'clase'])->where('disp', 1)
+        ->get();
 @endphp
+
 <x-card class="w-full p-8">
 
     {{-- Encabezado --}}
@@ -26,7 +29,7 @@
                     <th class="px-4 py-2 text-left">Modelo</th>
                     <th class="px-4 py-2 text-left">Clase</th>
                     <th class="px-4 py-2 text-left">Color</th>
-                    <th class="px-4 py-2 text-left">Propietario</th>
+                    <th class="px-4 py-2 text-left">Acciones</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-200 text-sm">
@@ -44,7 +47,18 @@
                         <td class="px-4 py-2 whitespace-nowrap">{{ $vehiculo->mod }}</td>
                         <td class="px-4 py-2 whitespace-nowrap">{{ $clase->des }}</td>
                         <td class="px-4 py-2 whitespace-nowrap">{{ $vehiculo->col }}</td>
-                        <td class="px-4 py-2 whitespace-nowrap">{{ $usuario->nom }} {{ $usuario->ape }}</td>
+                        <td class="px-4 py-2 whitespace-nowrap flex gap-2">
+                            {{-- Editar información --}}
+                            <a href="{{ route('vehiculos.edit', $vehiculo->cod) }}"
+                                class="px-3 py-1 text-xs bg-red-700 text-white rounded hover:bg-red-800 transition">
+                                Editar
+                            </a>
+                            {{-- Modificar documentos --}}
+                            {{-- <a href="{{ route('vehiculos.doc.create', $vehiculo->cod) }}"
+                                class="px-3 py-1 text-xs bg-gray-800 text-white rounded hover:bg-gray-900 transition">
+                                Documentos
+                            </a> --}}
+                        </td>
                     </tr>
                 @empty
                     <tr>
@@ -56,4 +70,8 @@
             </tbody>
         </table>
     </div>
+
+
+
+
 </x-card>
