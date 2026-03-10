@@ -11,9 +11,7 @@ class VehiculosController extends Controller
      */
     public function index()
     {
-        // 1. Eloquent ORM: Le pedimos a la base de datos TODOS los usuarios
-        // Nota: En un proyecto real gigante usaríamos paginación (paginate), 
-        // pero para empezar, all() está perfecto.
+
         $vehiculos = Vehiculo::all();
         $vehiculosHechos = [];
         foreach ($vehiculos as $vehiculo) {
@@ -30,7 +28,7 @@ class VehiculosController extends Controller
                 'combustible' => $vehiculo->codcom,
                 'ciudad' => $vehiculo->codciu,
                 'precio_renta' => $vehiculo->prerent,
-                'disponible' => $vehiculo->disp,
+                'disponibilidad' => $vehiculo->disp,
             ];
         }
 
