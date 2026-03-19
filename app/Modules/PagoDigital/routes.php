@@ -7,7 +7,8 @@ use App\Modules\PagoDigital\Controllers\PaymentController;
 
 
 Route::prefix('pago-digital')->group(function () {
-    Route::get('/', [PagoDigitalController::class, 'index'])->name('pago.digital');
+    Route::get('/{reserva_id?}', [PagoDigitalController::class, 'index'])->name('pago.digital');
+    Route::post('/store', [PagoDigitalController::class, 'store'])->name('pago.digital.store');
 });
 
 
@@ -23,7 +24,7 @@ Route::get('/checkout/{monto}', [PaymentController::class, 'checkout'])->name('c
 
 Route::get('/pago-exitoso', function () {
     return view('modules.PagoDigital.success');
-})->name('pago.exitoso');
+})->name('pago.success');
 
 Route::get('/pago-fallido', function () {
     return view('modules.PagoDigital.failure');
