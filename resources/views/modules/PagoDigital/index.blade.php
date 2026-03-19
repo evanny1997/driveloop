@@ -168,7 +168,6 @@ Total
 <!-- BOTON -->
 
 <a
-href="{{ route('checkout', ['monto' => $monto, 'reserva_id' => $reserva_id]) }}"
 class="block w-full text-center bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300"
 >
 

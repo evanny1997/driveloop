@@ -12,12 +12,10 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__ . '/../routes/console.php',
         health: '/up',
     )
-->withMiddleware(function (Middleware $middleware): void {
-        $middleware->validateCsrfTokens(except: [
-            'webhook/mercadopago', 
-            'api/webhook/mercadopago', 
-        ]);
+    ->withMiddleware(function (Middleware $middleware): void {
 
+        // Ya no hay excepciones CSRF para MercadoPago
+        $middleware->validateCsrfTokens();
 
         $middleware->alias([
             'verified_docs' => \App\Modules\GestionUsuario\Middleware\EnsureUserIsVerified::class,
