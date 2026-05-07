@@ -4,51 +4,59 @@ namespace App\Models\MER;
 
 use Illuminate\Database\Eloquent\Model;
 
-/**
- * Class Pago
- * 
- * @property int $id
- * @property int $reserva_id
- * @property int $user_id
- * @property float $monto
- * @property string $metodo_pago
- * @property string $estado_pago
- * @property array|null $detalles
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
- * 
- * @property Reserva $reserva
- * @property User $user
- *
- * @package App\Models\MER
- */
 class Pago extends Model
 {
     protected $table = 'pagos';
 
     protected $fillable = [
-        'reserva_id',
-        'user_id',
+        'codres',
+        'idusu',
+        'referencia',
+        'metodo',
         'monto',
-        'metodo_pago',
-        'estado_pago',
-        'detalles'
+        'estado',
+        'moneda',
+        'fecha_pago',
+        'detalle',
+        'provider',
+        'external_payment_id',
+        'external_reference',
+        'status_detail',
+        'webhook_payload',
+        'approved_at',
     ];
 
     protected $casts = [
-        'reserva_id' => 'int',
-        'user_id' => 'int',
         'monto' => 'float',
-        'detalles' => 'json'
+        'fecha_pago' => 'datetime',
+        'detalle' => 'array',
+        'webhook_payload' => 'array',
+        'approved_at' => 'datetime',
+    ];
+
+    protected $appends = [
+        'estado_normalizado',
     ];
 
     public function reserva()
     {
-        return $this->belongsTo(Reserva::class, 'reserva_id', 'cod');
+        return $this->belongsTo(Reserva::class, 'codres', 'cod');
     }
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_id', 'id');
+        return $this->belongsTo(User::class, 'idusu', 'id');
+    }
+
+    public function getEstadoNormalizadoAttribute(): string
+    {
+        $estado = strtolower(trim((string) $this->estado));
+
+        return match ($estado) {
+            'approved', 'aprobado' => 'aprobado',
+            'pending', 'pendiente' => 'pendiente',
+            'rejected', 'rechazado', 'failed', 'fallido' => 'rechazado',
+            default => 'pendiente',
+        };
     }
 }

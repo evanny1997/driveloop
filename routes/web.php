@@ -11,3 +11,6 @@ require app_path('Modules/PagoDigital/routes.php');
 foreach (glob(app_path('Modules/*/routes.php')) as $route) {
     require $route;
 }
+
+
+
